@@ -75,7 +75,7 @@ git push origin feature-your-task-name
 ```
 
 ### 4. At Last:
-Go to [https://github.com/manjit524/StockSense](https://github.com/manjit524/StockSense) and click **Compare & pull request** to submit your work for review.
+Go to [https://github.com/Vedmehta-22/StockSense](https://github.com/Vedmehta-22/StockSense) and click **Compare & pull request** to submit your work for review.
 
 Once reviewed and merged into `main`, all other team members can click the **Sync Changes / Refresh** button in the bottom-left corner of VS Code to pull the latest code.
 
