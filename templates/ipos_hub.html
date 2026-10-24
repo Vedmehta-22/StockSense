@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+{% block title %}IPO Calendar &amp; Primary Market Issues — StockSense Markets{% endblock %}
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='markets.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='ipo_detail.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="market-detail-wrap">
+
+  <!-- Back Link -->
+  <a href="{{ url_for('markets') }}" class="back-link">
+    ← Back to Markets Hub
+  </a>
+
+  <!-- Header Section -->
+  <div class="detail-hero-header">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
+      <div>
+        <p class="eyebrow" style="margin:0 0 8px;">Primary Market Issues</p>
+        <h1 style="font-family:var(--font-display); font-size:clamp(1.8rem, 4vw, 2.6rem); font-weight:700; margin:0 0 10px; line-height:1.2;">IPO Calendar &amp; New Listings</h1>
+      </div>
+      <div>
+        <span class="daily-badge">Official NSE / BSE Calendar</span>
+      </div>
+    </div>
+    <p class="lede" style="margin:4px 0 0;">
+      Upcoming and active Initial Public Offerings listed on Indian exchanges. Track issue dates, price bands, and timeline details.
+    </p>
+  </div>
+
+  <!-- IPO Market Visual Banner -->
+  <div class="category-hero-visual">
+    <img src="{{ url_for('static', filename='markets_ipo.jpg') }}" alt="IPO Market Debut Ceremony" loading="lazy">
+    <div class="category-hero-visual-overlay">
+      <div>
+        <span class="category-hero-visual-badge" style="background:rgba(192, 132, 252, 0.2); color:#C084FC; border:1px solid rgba(192, 132, 252, 0.4);">Primary Market Radar</span>
+        <h3 class="category-hero-visual-title">Live Exchange Listing Desk &amp; IPO Trackers</h3>
+      </div>
+    </div>
+  </div>
+
+  <!-- Primary Market Quick Stats Bar -->
+  <div class="markets-stats-bar" style="margin: 0 auto 36px;">
+    <div class="stats-pill-container">
+      <div class="stat-pill-item">
+        <span><span class="pill-num">{{ ipos|length }}</span> Active / Upcoming Issues</span>
+      </div>
+      <div class="stat-pill-divider"></div>
+      <div class="stat-pill-item">
+        <span><span class="pill-num">NSE &amp; BSE</span> Mainboard &amp; SME</span>
+      </div>
+      <div class="stat-pill-divider"></div>
+      <div class="stat-pill-item">
+        <span><span class="pill-num">ASBA</span> UPI Enabled</span>
+      </div>
+      <div class="stat-pill-divider"></div>
+      <div class="stat-pill-item">
+        <span><span class="pill-num">T+3</span> Listing Cycle</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Full IPO Cards Grid Section -->
+  <div class="detail-card-panel" style="margin-bottom:48px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; flex-wrap:wrap; gap:12px;">
+      <div>
+        <h3 style="font-family:var(--font-display); font-size:1.2rem; font-weight:600; margin:0;">Active &amp; Upcoming IPO Issues</h3>
+        <p style="font-size:0.8rem; color:var(--text-muted); margin:4px 0 0;">Click any IPO card below to open its dedicated timeline, investor categories, and subscription tracker page.</p>
+      </div>
+      <input type="text" id="ipo-hub-search" class="table-search" placeholder="Search company name..." style="max-width:300px; margin:0;">
+    </div>
+
+    {% if ipos %}
+    <div class="ipo-cards-grid" id="ipoCardsGrid">
+      {% for ipo in ipos %}
+      <a href="{{ url_for('ipo_detail', company_slug=ipo.slug) }}" class="ipo-list-card">
+        <div class="ipo-lc-logo">{{ ipo.company[0] }}</div>
+        <div class="ipo-lc-body">
+          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            <span class="ipo-lc-name">{{ ipo.company }}</span>
+            <span class="badge-tag">NSE · BSE</span>
+          </div>
+          <div class="ipo-lc-meta">
+            <span class="ipo-lc-band">Price: {{ ipo.price_band if ipo.price_band else '₹—' }}</span>
+            <span class="ipo-lc-dot">·</span>
+            <span class="ipo-lc-size">Issue: {{ ipo.issue_size if ipo.issue_size else '—' }}</span>
+          </div>
+          <div class="ipo-lc-dates">
+            <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; margin-right:4px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Opens: { ipo.open_date }</span>
+            <span style="color:var(--hairline);">—</span>
+            <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; margin-right:4px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Closes: { ipo.close_date }</span>
+          </div>
+        </div>
+        <span class="ipo-lc-arrow">View Details →</span>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="panel-note">No upcoming IPO issues currently scheduled on NSE/BSE.</p>
+    {% endif %}
+  </div>
+
+  <!-- Educational 4-Card Guide Section -->
+  <div style="margin-bottom:48px;">
+    <h3 style="font-family:var(--font-display); font-size:1.3rem; font-weight:700; margin:0 0 20px;">Understanding Primary Market IPO Investing</h3>
+    <div class="market-guide-grid">
+      <div class="guide-card">
+        <div class="guide-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4M8 6h.01M16 6h.01M12 6h.01M8 10h.01M16 10h.01M12 10h.01M8 14h.01M16 14h.01M12 14h.01"/></svg></div>
+        <h4>What is an IPO?</h4>
+        <p>An Initial Public Offering (IPO) is when a privately-held company sells fresh equity or promoter holdings to the public for the first time, listing its shares on public exchanges to raise growth capital.</p>
+      </div>
+
+      <div class="guide-card">
+        <div class="guide-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="12" cy="16" r="1"/></svg></div>
+        <h4>ASBA Banking Facility</h4>
+        <p>Under SEBI's ASBA (Application Supported by Blocked Amount) system, your bid funds remain in your own bank account earning regular interest. Money is deducted only upon confirmed allotment.</p>
+      </div>
+
+      <div class="guide-card">
+        <div class="guide-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <h4>Quota Allocation Rules</h4>
+        <p>Mainboard IPOs allocate shares across 3 main investor categories: Qualified Institutional Buyers (QIB 50%), Non-Institutional HNI Investors (NII 15%), and Retail Individual Investors (RII 35%).</p>
+      </div>
+
+      <div class="guide-card">
+        <div class="guide-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+        <h4>DRHP Prospectus Review</h4>
+        <p>The Draft Red Herring Prospectus (DRHP) filed with SEBI discloses crucial company balance sheets, revenue growth, promoter shareholding, debt obligations, and key operational risk factors.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ Accordion Section -->
+  <div class="detail-card-panel" style="margin-bottom:48px;">
+    <h3 style="font-family:var(--font-display); font-size:1.3rem; font-weight:700; margin:0 0 20px;">Frequently Asked Questions on IPOs</h3>
+
+    <div class="faq-accordion">
+      <details class="faq-item" open>
+        <summary>How is share allotment decided for oversubscribed retail bids?</summary>
+        <p>When the retail portion is oversubscribed, SEBI mandates a computerized random lottery system. Every eligible retail bidder has an equal chance to receive one minimum lot if mathematically possible.</p>
+      </details>
+
+      <details class="faq-item">
+        <summary>What is the minimum application amount for retail investors?</summary>
+        <p>Retail investors must apply for at least one lot. The minimum application amount is calculated as: <strong>Lot Size × Upper Price Band</strong>. Most mainboard IPOs design lot sizes so the minimum bid is between ₹13,000 and ₹15,000.</p>
+      </details>
+
+      <details class="faq-item">
+        <summary>What is Grey Market Premium (GMP)?</summary>
+        <p>Grey Market Premium (GMP) is an informal, unofficial price premium at which IPO applications trade in unofficial dealer circles prior to listing. It is completely unregulated and should not be treated as a guarantee of listing gains.</p>
+      </details>
+
+      <details class="faq-item">
+        <summary>Can I apply for an IPO using UPI on discount brokers?</summary>
+        <p>Yes. You can apply for any active IPO on Zerodha, Groww, Upstox, or Angel One by entering your UPI ID. Once submitted, approve the mandate notification in your UPI app (GPay, PhonePe, BHIM) before 5:00 PM on the closing date.</p>
+      </details>
+    </div>
+  </div>
+
+  <!-- Related Markets Navigation Cards -->
+  <div class="related-markets-section">
+    <h3 style="font-family:var(--font-display); font-size:1.2rem; font-weight:700; margin:0 0 16px;">Explore Other Asset Classes</h3>
+    <div class="related-markets-grid">
+      <a href="{{ url_for('market_category', category_id='indian-stocks') }}" class="rel-mkt-card">
+        <span class="rel-mkt-icon">₹</span>
+        <div>
+          <h4>Indian Stocks</h4>
+          <p>NSE &amp; BSE Bhavcopy Equities</p>
+        </div>
+      </a>
+      <a href="{{ url_for('market_category', category_id='etfs') }}" class="rel-mkt-card">
+        <span class="rel-mkt-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span>
+        <div>
+          <h4>ETFs Hub</h4>
+          <p>Nifty, Bank &amp; Index Funds</p>
+        </div>
+      </a>
+      <a href="{{ url_for('market_category', category_id='mutual-funds') }}" class="rel-mkt-card">
+        <span class="rel-mkt-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/><path d="M19 5v4h-4"/></svg></span>
+        <div>
+          <h4>Mutual Funds</h4>
+          <p>~40,000 AMFI Schemes</p>
+        </div>
+      </a>
+      <a href="{{ url_for('market_category', category_id='us-stocks') }}" class="rel-mkt-card">
+        <span class="rel-mkt-icon">$</span>
+        <div>
+          <h4>US Stocks</h4>
+          <p>AAPL, TSLA, NVDA &amp; NYSE</p>
+        </div>
+      </a>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  var searchInput = document.getElementById('ipo-hub-search');
+  var grid = document.getElementById('ipoCardsGrid');
+  if (searchInput && grid) {
+    searchInput.addEventListener('input', function () {
+      var q = searchInput.value.trim().toLowerCase();
+      var cards = grid.querySelectorAll('.ipo-list-card');
+      cards.forEach(function (card) {
+        card.style.display = card.textContent.toLowerCase().indexOf(q) === -1 ? 'none' : 'flex';
+      });
+    });
+  }
+</script>
+{% endblock %}

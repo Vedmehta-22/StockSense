@@ -1,0 +1,313 @@
+{% extends "base.html" %}
+{% block title %}US Stocks (NYSE &amp; NASDAQ) — StockSense Markets{% endblock %}
+{% block styles %}<link rel="stylesheet" href="{{ url_for('static', filename='markets.css') }}">{% endblock %}
+
+{% block content %}
+<div class="market-detail-wrap">
+
+  <!-- Back Link -->
+  <a href="{{ url_for('markets') }}" class="back-link">
+    ← Back to Markets Hub
+  </a>
+
+  <!-- Header Section -->
+  <div class="detail-hero-header">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
+      <div>
+        <p class="eyebrow" style="margin:0 0 8px;">NYSE &amp; NASDAQ Equities</p>
+        <h1 style="font-family:var(--font-display); font-size:clamp(1.8rem, 4vw, 2.6rem); font-weight:700; margin:0 0 10px; line-height:1.2;">US Stocks &amp; Global Leaders</h1>
+      </div>
+      <div>
+        <span class="live-badge"><span class="live-dot"></span> Live Quotes · updated <span class="live-updated-time">just now</span></span>
+      </div>
+    </div>
+    <p class="lede" style="margin:4px 0 0;">
+      Invest in the world's most innovative technology, semiconductor, and blue-chip enterprises. Real-time USD pricing with AI risk evaluation.
+    </p>
+  </div>
+
+  <!-- US Stocks Market Visual Banner -->
+  <div class="category-hero-visual">
+    <img src="{{ url_for('static', filename='markets_us_stocks.jpg') }}" alt="Wall Street NYSE NASDAQ Equities Trading Floor" loading="lazy">
+    <div class="category-hero-visual-overlay">
+      <div>
+        <span class="category-hero-visual-badge" style="background:rgba(2, 132, 199, 0.2); color:#38BDF8; border:1px solid rgba(56, 189, 248, 0.4);">Wall Street &amp; NASDAQ</span>
+        <h3 class="category-hero-visual-title">Institutional Equities Desk &amp; S&amp;P 500 Market Depth</h3>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Performing US Stocks Cards (2-Column Grid) -->
+  <div class="market-top-grid">
+
+    <!-- Top Tech & AI Giants -->
+    <div class="market-top-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <h3 style="font-family:var(--font-display); font-size:1.1rem; font-weight:600; margin:0;">Magnificent 7 &amp; Big Tech</h3>
+        <span class="engine-tag">Mega-Cap Tech</span>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        {% for item in top_tech %}
+        <div data-symbol="{{ item.yf_symbol }}" data-currency="$" class="stock-highlight-item">
+          <div>
+            <span class="mono" style="font-weight:700; color:var(--text); font-size:0.9rem;">{{ item.symbol }}</span>
+            <span style="font-size:0.78rem; color:var(--text-muted); margin-left:8px;">{{ item.label }}</span>
+          </div>
+          <div class="mono" style="text-align:right;">
+            <span class="live-currency">$</span><span class="live-price-value">—</span>
+            <span class="live-arrow" style="margin-left:6px;">·</span> <span class="live-change-value">—</span>%
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Top Semiconductors & Bluechip Leaders -->
+    <div class="market-top-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <h3 style="font-family:var(--font-display); font-size:1.1rem; font-weight:600; margin:0;">Semiconductors &amp; Blue Chips</h3>
+        <span class="engine-tag engine-tag-alt">AI &amp; Finance</span>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        {% for item in top_semi_bluechip %}
+        <div data-symbol="{{ item.yf_symbol }}" data-currency="$" class="stock-highlight-item">
+          <div>
+            <span class="mono" style="font-weight:700; color:var(--text); font-size:0.9rem;">{{ item.symbol }}</span>
+            <span style="font-size:0.78rem; color:var(--text-muted); margin-left:8px;">{{ item.label }}</span>
+          </div>
+          <div class="mono" style="text-align:right;">
+            <span class="live-currency">$</span><span class="live-price-value">—</span>
+            <span class="live-arrow" style="margin-left:6px;">·</span> <span class="live-change-value">—</span>%
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Category Filter Cards -->
+  <div style="margin-bottom:36px;">
+    <h3 style="font-family:var(--font-display); font-size:1.2rem; font-weight:600; margin-bottom:16px;">Explore US Equities by Sector</h3>
+    <div class="category-filter-grid">
+      <div class="cat-filter-card active" id="cat-all" onclick="filterUsSector('all')">
+        <div class="cat-icon">🇺🇸</div>
+        <h4>All Equities</h4>
+        <p>Complete Universe</p>
+      </div>
+
+      <div class="cat-filter-card" id="cat-tech" onclick="filterUsSector('tech')">
+        <div class="cat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+        <h4>Big Tech &amp; AI</h4>
+        <p>AAPL, MSFT, META, GOOGL</p>
+      </div>
+
+      <div class="cat-filter-card" id="cat-semi" onclick="filterUsSector('semi')">
+        <div class="cat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/></svg></div>
+        <h4>Semiconductors</h4>
+        <p>NVDA, AMD, AVGO, TSM</p>
+      </div>
+
+      <div class="cat-filter-card" id="cat-finance" onclick="filterUsSector('finance')">
+        <div class="cat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M3 10h18M4 10V4l8-3 8 3v6M6 10v7M10 10v7M14 10v7M18 10v7"/></svg></div>
+        <h4>Finance &amp; Banking</h4>
+        <p>JPM, V, MA, BRK-B, GS</p>
+      </div>
+
+      <div class="cat-filter-card" id="cat-consumer" onclick="filterUsSector('consumer')">
+        <div class="cat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></div>
+        <h4>Consumer &amp; Retail</h4>
+        <p>WMT, COST, DIS, KO, MCD</p>
+      </div>
+
+      <div class="cat-filter-card" id="cat-healthcare" onclick="filterUsSector('healthcare')">
+        <div class="cat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 3v5a4 4 0 0 0 8 0V3"/><path d="M6 3h-3M14 3h-3M8.5 12v3a4 4 0 0 0 4 4h1a4 4 0 0 0 4-4v-3"/><circle cx="17.5" cy="12" r="2"/></svg></div>
+        <h4>Healthcare &amp; Pharma</h4>
+        <p>JNJ, LLY, UNH, PFE</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Full Filterable Data Table -->
+  <div class="detail-card-panel" style="margin-bottom:48px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+      <div>
+        <h3 style="font-family:var(--font-display); font-size:1.2rem; font-weight:600; margin:0;">Live US Equities Directory</h3>
+        <p style="font-size:0.8rem; color:var(--text-muted); margin:4px 0 0;">Showing curated mega-cap and sector leaders tracked by the StockSense AI engine.</p>
+      </div>
+      <input type="text" id="us-search" class="table-search" placeholder="Search by symbol or name..." style="max-width:320px; margin:0;">
+    </div>
+
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Symbol</th>
+            <th>Company Name</th>
+            <th>Sector / Industry</th>
+            <th>Exchange</th>
+            <th>Price (USD)</th>
+            <th>24h / Session Change</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="us-table-body">
+          {% for item in stocks %}
+          <tr data-symbol="{{ item.yf_symbol }}" data-currency="$" data-category="{{ item.category }}">
+            <td class="mono" style="font-weight:700; color:var(--text);">{{ item.symbol }}</td>
+            <td>{{ item.label }}</td>
+            <td><span class="sector-pill">{{ item.sector }}</span></td>
+            <td><span class="pick-exchange">{{ item.exchange }}</span></td>
+            <td class="mono">
+              <span class="live-currency">$</span><span class="live-price-value">—</span>
+            </td>
+            <td class="mono">
+              <span class="live-arrow">·</span> <span class="live-change-value">—</span>%
+            </td>
+            <td>
+              <form action="{{ url_for('reports_growth') }}" method="POST" style="display:inline;">
+                <input type="hidden" name="symbol" value="{{ item.symbol }}">
+                <input type="hidden" name="exchange" value="US">
+                <input type="hidden" name="period_days" value="7">
+                <button type="submit" class="btn btn-ghost btn-sm" style="padding:4px 10px; font-size:0.75rem;">Report →</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Educational 4-Card Guide Section -->
+  <div style="margin-bottom:48px;">
+    <h3 style="font-family:var(--font-display); font-size:1.3rem; font-weight:700; margin:0 0 20px;">Understanding US Equities for Global Investors</h3>
+    <div class="market-guide-grid">
+      <div class="guide-card">
+        <div class="guide-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg></div>
+        <h4>LRS $250k Annual Limit</h4>
+        <p>Under the RBI's Liberalised Remittance Scheme (LRS), resident Indian individuals can legally remit up to $250,000 per financial year for overseas investment in stocks, ETFs, and real estate.</p>
+      </div>
+
+      <div class="guide-card">
+        <div class="guide-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg></div>
+        <h4>Fractional Shares Investing</h4>
+        <p>US exchanges support fractional investing — you don't need to buy a whole share of Berkshire Hathaway or NVIDIA. You can invest as little as $1 or $10 into any mega-cap company.</p>
+      </div>
+
+      <div class="guide-card">
+        <div class="guide-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <h4>USD Currency Appreciation</h4>
+        <p>Historically, the US Dollar has appreciated ~3-5% annually against the Indian Rupee, offering an embedded currency hedge that boosts overall portfolio returns for international investors.</p>
+      </div>
+
+      <div class="guide-card">
+        <div class="guide-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1Z"/><path d="M8 7h8M8 12h8M8 17h4"/></svg></div>
+        <h4>W-8BEN &amp; DTAA Tax Rules</h4>
+        <p>Under the India-US Double Tax Avoidance Agreement (DTAA), US dividends are subject to a flat 25% withholding tax. Capital gains are not taxed in the US; they are taxed in India as LTCG/STCG.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ Accordion Section -->
+  <div class="detail-card-panel" style="margin-bottom:48px;">
+    <h3 style="font-family:var(--font-display); font-size:1.3rem; font-weight:700; margin:0 0 20px;">Frequently Asked Questions on US Stocks</h3>
+
+    <div class="faq-accordion">
+      <details class="faq-item" open>
+        <summary>What are US market trading hours in Indian Standard Time (IST)?</summary>
+        <p>Regular trading hours on the NYSE and NASDAQ run from <strong>9:30 AM to 4:00 PM Eastern Time (ET)</strong>. In Indian Standard Time (IST), this corresponds to <strong>7:00 PM to 1:30 AM IST</strong> during Daylight Saving Time (summer) and <strong>8:00 PM to 2:30 AM IST</strong> in winter.</p>
+      </details>
+
+      <details class="faq-item">
+        <summary>Can Indian retail investors legally buy US stocks like Apple and NVIDIA?</summary>
+        <p>Yes. The Reserve Bank of India (RBI) permits Indian citizens to invest in US equities through the Liberalised Remittance Scheme (LRS) using registered international brokers (such as INDmoney, Vested, or Interactive Brokers).</p>
+      </details>
+
+      <details class="faq-item">
+        <summary>How does StockSense AI evaluate US stocks?</summary>
+        <p>StockSense utilizes a trained GRU (Gated Recurrent Unit) neural network together with 26 technical indicators (RSI, MACD, Sharpe, Beta, Max Drawdown) to classify US equities into Low, Medium, and High risk buckets tailored to your target investment horizon.</p>
+      </details>
+
+      <details class="faq-item">
+        <summary>How are capital gains on US stocks taxed for Indian residents?</summary>
+        <p>Under Indian tax law, holding US stocks for over 24 months qualifies as Long Term Capital Gains (LTCG) taxed at 12.5% (post-Budget 2024). Holding for less than 24 months is treated as Short Term Capital Gains (STCG) and added to your slab income.</p>
+      </details>
+
+      <details class="faq-item">
+        <summary>How do I generate a technical growth report for a US stock?</summary>
+        <p>Click the <strong>Report →</strong> button beside any ticker above, or visit the <strong>Reports</strong> tab in the navigation bar to run an instant 26-metric multi-timeframe backtest with technical momentum indicators.</p>
+      </details>
+    </div>
+  </div>
+
+  <!-- Related Markets Navigation Cards -->
+  <div class="related-markets-section">
+    <h3 style="font-family:var(--font-display); font-size:1.2rem; font-weight:700; margin:0 0 16px;">Explore Other Asset Classes</h3>
+    <div class="related-markets-grid">
+      <a href="{{ url_for('market_category', category_id='indian-stocks') }}" class="rel-mkt-card">
+        <span class="rel-mkt-icon">₹</span>
+        <div>
+          <h4>Indian Stocks</h4>
+          <p>NSE &amp; BSE Bhavcopy Equities</p>
+        </div>
+      </a>
+      <a href="{{ url_for('market_category', category_id='etfs') }}" class="rel-mkt-card">
+        <span class="rel-mkt-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span>
+        <div>
+          <h4>ETFs Hub</h4>
+          <p>Index &amp; Sector Trackers</p>
+        </div>
+      </a>
+      <a href="{{ url_for('market_category', category_id='crypto') }}" class="rel-mkt-card">
+        <span class="rel-mkt-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
+        <div>
+          <h4>Crypto &amp; Options</h4>
+          <p>Live 24/7 Coins &amp; NIFTY Chain</p>
+        </div>
+      </a>
+      <a href="{{ url_for('market_category', category_id='commodities') }}" class="rel-mkt-card">
+        <span class="rel-mkt-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.66 3.58 3 8 3s8-1.34 8-3V5"/><path d="M4 12c0 1.66 3.58 3 8 3s8-1.34 8-3"/></svg></span>
+        <div>
+          <h4>Commodities</h4>
+          <p>Gold, Silver, Crude Oil</p>
+        </div>
+      </a>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  var searchInput = document.getElementById('us-search');
+  var tbody = document.getElementById('us-table-body');
+  if (searchInput && tbody) {
+    searchInput.addEventListener('input', function () {
+      var q = searchInput.value.trim().toLowerCase();
+      Array.from(tbody.rows).forEach(function (row) {
+        row.style.display = row.textContent.toLowerCase().indexOf(q) === -1 ? 'none' : '';
+      });
+    });
+  }
+
+  function filterUsSector(category) {
+    if (!tbody) return;
+    document.querySelectorAll('.cat-filter-card').forEach(function(card) {
+      card.classList.remove('active');
+    });
+    var activeCard = document.getElementById('cat-' + category);
+    if (activeCard) activeCard.classList.add('active');
+
+    Array.from(tbody.rows).forEach(function (row) {
+      var rowCat = row.getAttribute('data-category');
+      if (category === 'all' || rowCat === category) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  }
+</script>
+{% endblock %}

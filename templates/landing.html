@@ -1,0 +1,562 @@
+{% extends "base.html" %}
+{% block title %}StockSense — Grow Your Wealth Smarter{% endblock %}
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='landing.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='landing_v2.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<!-- ===================== HERO SECTION ===================== -->
+<section class="vw-hero-v2" id="heroSection">
+  <div class="hero-v2-grid">
+
+    <!-- HERO LEFT: Headline & Actions -->
+    <div class="hero-v2-left">
+      <span class="vw-badge">
+        <span class="badge-pulse"></span>
+        Dual-Engine AI Analysis · 7,700+ Assets
+      </span>
+      <h1>Grow Your Wealth<br><span class="hero-highlight">Smarter</span> with StockSense</h1>
+      <p class="vw-hero-sub">
+        A dual-engine research platform for NSE, BSE &amp; US markets. GRU model for long-horizon position shortlists + live rule-based scanner for intraday sessions. Set budget, pick horizon, get risk-sorted answers.
+      </p>
+      <div class="vw-hero-actions">
+        <a href="{{ url_for('get_advice') }}" class="vw-btn vw-btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 3 4 14h7l-1 7 9-11h-7z"/></svg>
+          Start Analyzing Today
+        </a>
+        <a href="{{ url_for('markets') }}" class="vw-btn vw-btn-ghost">Explore Markets →</a>
+      </div>
+
+      <!-- Quick Metrics Bar -->
+      <div class="hero-quick-stats">
+        <div class="hqs-item">
+          <span class="hqs-num">7,700+</span>
+          <span class="hqs-label">Tickers Tracked</span>
+        </div>
+        <div class="hqs-divider"></div>
+        <div class="hqs-item">
+          <span class="hqs-num">26</span>
+          <span class="hqs-label">Technical Metrics</span>
+        </div>
+        <div class="hqs-divider"></div>
+        <div class="hqs-item">
+          <span class="hqs-num">24/7</span>
+          <span class="hqs-label">Live Feeds</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- HERO RIGHT: Sleek Trading Dashboard Widget -->
+    <div class="hero-chart-widget">
+      <!-- Widget Header: Asset Tabs & Timeframes -->
+      <div class="widget-header">
+        <div class="widget-tabs" id="heroWidgetTabs">
+          <button class="w-tab active" data-symbol="nifty" data-name="NIFTY 50" data-currency="₹" data-base="24380.15" data-change="+142.30 (+0.59%)">NIFTY 50</button>
+          <button class="w-tab" data-symbol="reliance" data-name="RELIANCE" data-currency="₹" data-base="2948.10" data-change="+36.20 (+1.24%)">RELIANCE</button>
+          <button class="w-tab" data-symbol="sp500" data-name="S&amp;P 500" data-currency="$" data-base="5540.20" data-change="+28.40 (+0.51%)">S&amp;P 500</button>
+          <button class="w-tab" data-symbol="nvda" data-name="NVIDIA" data-currency="$" data-base="142.66" data-change="+4.72 (+3.42%)">NVDA</button>
+          <button class="w-tab" data-symbol="btc" data-name="BITCOIN" data-currency="$" data-base="64250.00" data-change="-410.00 (-0.63%)">BTC</button>
+        </div>
+        <div class="widget-tf-group">
+          <button class="tf-btn active" data-tf="1D">1D</button>
+          <button class="tf-btn" data-tf="1W">1W</button>
+          <button class="tf-btn" data-tf="1M">1M</button>
+          <button class="tf-btn" data-tf="1Y">1Y</button>
+        </div>
+      </div>
+
+      <!-- Price Header & Live Pulse -->
+      <div class="widget-price-row">
+        <div class="wpr-left">
+          <span class="wpr-symbol" id="heroWName">NIFTY 50</span>
+          <div class="wpr-price-box">
+            <span class="wpr-price" id="heroWPrice">24,380.15</span>
+            <span class="wpr-change up" id="heroWChange">+142.30 (+0.59%)</span>
+          </div>
+        </div>
+        <div class="wpr-right">
+          <span class="live-pill"><span class="live-pulse"></span> LIVE</span>
+          <div class="chart-mode-group">
+            <button class="cm-btn active" data-mode="line" title="Line Chart"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></button>
+            <button class="cm-btn" data-mode="candles" title="Candlestick View"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v2M6 19v2M18 3v5M18 16v5"/><rect x="4" y="5" width="4" height="14" rx="1"/><rect x="16" y="8" width="4" height="8" rx="1"/></svg></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Canvas Wrap -->
+      <div class="widget-canvas-container" id="heroWidgetCanvasWrap">
+        <canvas id="heroWidgetCanvas"></canvas>
+        <div class="chart-tooltip" id="heroChartTooltip">
+          <span class="tt-price" id="ttPrice">₹24,380.15</span>
+          <span class="tt-change up" id="ttChange">+0.59%</span>
+          <span class="tt-time" id="ttTime">Live Tick</span>
+        </div>
+      </div>
+
+      <!-- Metrics Footer Bar inside Widget -->
+      <div class="widget-metrics-bar">
+        <div class="wm-stat">
+          <span class="wm-lbl" id="wmHighLbl">Day High</span>
+          <span class="wm-val up" id="wmHigh">24,412.50</span>
+        </div>
+        <div class="wm-stat">
+          <span class="wm-lbl" id="wmLowLbl">Day Low</span>
+          <span class="wm-val down" id="wmLow">24,198.30</span>
+        </div>
+        <div class="wm-stat">
+          <span class="wm-lbl">RSI (14)</span>
+          <span class="wm-val" id="wmRsi">64.2 (Bullish)</span>
+        </div>
+        <div class="wm-stat">
+          <span class="wm-lbl">AI Model Signal</span>
+          <span class="wm-val ai-badge" id="wmSignal">Strong Outperform</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===================== DATA SOURCES ===================== -->
+<div class="vw-sources">
+  <span class="vw-sources-label">Real data from</span>
+  <span class="name">NSE</span>
+  <span class="name">BSE</span>
+  <span class="name">Twelve Data</span>
+  <span class="name">yfinance</span>
+  <span class="name">AMFI</span>
+  <span class="name">FRED</span>
+</div>
+
+<!-- ===================== LIVE MARKET GRAPH SECTION ===================== -->
+<section class="vw-section home-graph-section">
+  <div class="vw-section-head">
+    <h2>Live Market Pulse</h2>
+    <p>Real-time animated charts for the world's most-tracked indices. Switch between markets below.</p>
+  </div>
+
+  <div class="home-chart-container">
+    <div class="home-chart-tabs">
+      <button class="hct-btn active" data-market="nifty">
+        <span class="hct-flag">🇮🇳</span> NIFTY 50
+      </button>
+      <button class="hct-btn" data-market="sensex">
+        <span class="hct-flag">🇮🇳</span> SENSEX
+      </button>
+      <button class="hct-btn" data-market="sp500">
+        <span class="hct-flag">🇺🇸</span> S&amp;P 500
+      </button>
+      <button class="hct-btn" data-market="nasdaq">
+        <span class="hct-flag">🇺🇸</span> NASDAQ
+      </button>
+      <button class="hct-btn" data-market="btc">
+        <span class="hct-flag">₿</span> Bitcoin
+      </button>
+      <button class="hct-btn" data-market="gold">
+        <span class="hct-flag"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; margin-right:4px;"><rect x="2" y="14" width="20" height="6" rx="1"/><path d="m5 14 3-8h8l3 8"/></svg></span> Gold
+      </button>
+    </div>
+
+    <div class="home-chart-panel">
+      <div class="home-chart-info">
+        <div class="hci-left">
+          <span class="hci-name" id="homeChartName">NIFTY 50</span>
+          <div class="hci-price-row">
+            <span class="hci-price" id="homeChartPrice">24,380.15</span>
+            <span class="hci-change up" id="homeChartChange">+142.30 (+0.59%)</span>
+          </div>
+        </div>
+        <div class="hci-right">
+          <span class="live-badge-sm"><span class="live-dot"></span>Live</span>
+        </div>
+      </div>
+      <div class="home-chart-canvas-wrap" id="homeMainChartWrap">
+        <canvas id="homeMainChart"></canvas>
+        <div class="chart-tooltip" id="homeChartTooltip">
+          <span class="tt-price" id="homeTtPrice">₹24,380.15</span>
+          <span class="tt-change up" id="homeTtChange">+0.59%</span>
+          <span class="tt-time" id="homeTtTime">Live Tick</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mini stat pills below chart -->
+    <div class="chart-stats-row">
+      <div class="cs-pill">
+        <span class="cs-label">Open</span>
+        <span class="cs-val" id="csOpen">24,238.00</span>
+      </div>
+      <div class="cs-pill">
+        <span class="cs-label">High</span>
+        <span class="cs-val cs-high" id="csHigh">24,412.50</span>
+      </div>
+      <div class="cs-pill">
+        <span class="cs-label">Low</span>
+        <span class="cs-val cs-low" id="csLow">24,198.30</span>
+      </div>
+      <div class="cs-pill">
+        <span class="cs-label">Prev Close</span>
+        <span class="cs-val" id="csPrev">24,237.85</span>
+      </div>
+      <div class="cs-pill">
+        <span class="cs-label">52W High</span>
+        <span class="cs-val cs-high" id="cs52High">26,277.35</span>
+      </div>
+      <div class="cs-pill">
+        <span class="cs-label">52W Low</span>
+        <span class="cs-val cs-low" id="cs52Low">21,964.60</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== LIVE ASSET CARDS ===================== -->
+<section class="vw-section">
+  <div class="vw-section-head" style="text-align:left; margin: 0 0 30px;">
+    <h2>Watchlist — Live Prices</h2>
+    <p>Real quotes updating right on this page via yfinance.</p>
+  </div>
+
+  <div class="vw-filters">
+    <button class="vw-filter-btn active" data-category="all">All assets</button>
+    <button class="vw-filter-btn" data-category="stocks">Stocks</button>
+    <button class="vw-filter-btn" data-category="crypto">Crypto</button>
+    <button class="vw-filter-btn" data-category="etfs">ETFs</button>
+  </div>
+
+  <div class="vw-asset-grid">
+    {% for a in trend_stocks %}
+    <div class="vw-asset-card" 
+         data-category="{{ a.category if a.category is defined else 'stocks' }}" 
+         data-symbol="{{ a.yf_symbol }}"
+         data-ticker="{{ a.symbol }}"
+         data-name="{{ a.name if a.name is defined else a.symbol }}"
+         data-exchange="{{ a.exchange }}"
+         data-price="{{ '%.2f'|format(a.price) if a.price is defined else '0' }}"
+         data-change="{{ '%.2f'|format(a.change) if a.change is defined else '0' }}"
+         data-currency="{{ '$' if (a.exchange == 'US' or a.exchange == 'CRYPTO' or a.category == 'crypto') else '₹' }}"
+         data-spark="{{ a.spark }}">
+      <div class="vw-asset-top">
+        <div class="vw-asset-identity">
+          <span class="vw-asset-symbol">{{ a.symbol }}</span>
+          {% if a.name %}
+          <span class="vw-asset-fullname" title="{{ a.name }}">{{ a.name }}</span>
+          {% endif %}
+        </div>
+        <span class="vw-asset-badge">{{ a.exchange }}</span>
+      </div>
+      <div class="vw-asset-sparkline-wrap" title="Click card to expand big interactive chart">
+        <svg viewBox="0 0 100 28" class="asset-spark" data-spark="{{ a.spark }}">
+          <polyline fill="none" stroke="{{ '#34D399' if (a.change is defined and a.change >= 0) else '#F87171' }}" stroke-width="1.6" points="{{ a.spark }}" vector-effect="non-scaling-stroke"/>
+        </svg>
+      </div>
+      <div class="vw-asset-price">
+        <span class="live-currency">{{ '$' if (a.exchange == 'US' or a.exchange == 'CRYPTO' or a.category == 'crypto') else '₹' }}</span><span class="live-price-value">{{ '%.2f'|format(a.price) if a.price is defined else '—' }}</span>
+      </div>
+      <div class="vw-asset-change {{ 'up' if (a.change is defined and a.change >= 0) else 'down' }}">
+        <span class="live-arrow">{{ '▲' if (a.change is defined and a.change >= 0) else '▼' }}</span>
+        <span class="live-change-value">{{ '%.2f'|format(a.change) if a.change is defined else '—' }}</span>%
+      </div>
+      <div class="vw-asset-actions">
+        <button type="button" class="vw-btn vw-btn-primary vw-btn-sm btn-open-chart" data-symbol="{ a.yf_symbol }"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; margin-right:4px;"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>Chart</button>
+        <a href="{{ url_for('reports') }}?ticker={{ a.yf_symbol }}" class="vw-btn vw-btn-ghost vw-btn-sm">Report</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- ===================== FEATURES VISUAL SECTION ===================== -->
+<section class="vw-section home-features-section">
+  <div class="features-split">
+    <div class="features-split-left">
+      <span class="vw-badge" style="margin-bottom:20px;">Built Different</span>
+      <h2>One Platform.<br>Every Market.</h2>
+      <p class="features-sub">From Reliance to NVIDIA, from Nifty Bees to Bitcoin — all your research happens in one unified workspace without tab-switching or manual data entry.</p>
+      <div class="feature-list">
+        <div class="feature-row">
+          <div class="fr-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 4 7v6c0 5 3.5 8 8 8s8-3 8-8V7z"/></svg>
+          </div>
+          <div>
+            <h4>GRU Neural Network Advisor</h4>
+            <p>Trained on real NSE/BSE/US historical data. Shortlists stocks by risk bucket, sized to your exact capital.</p>
+          </div>
+        </div>
+        <div class="feature-row">
+          <div class="fr-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 3 4 14h7l-1 7 9-11h-7z"/></svg>
+          </div>
+          <div>
+            <h4>Rule-Based Intraday Scanner</h4>
+            <p>EMA, RSI, VWAP signals on live 5-min candles. Transparent logic — not a black box.</p>
+          </div>
+        </div>
+        <div class="feature-row">
+          <div class="fr-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V5M4 15l5-5 4 4 7-8"/></svg>
+          </div>
+          <div>
+            <h4>26-Metric Technical Reports</h4>
+            <p>RSI, MACD, Beta, Sharpe, max drawdown per stock. Export to PDF or Excel instantly.</p>
+          </div>
+        </div>
+      </div>
+      <div class="features-cta">
+        <a href="{{ url_for('get_advice') }}" class="vw-btn vw-btn-primary">Try the Advisor</a>
+        <a href="{{ url_for('markets') }}" class="vw-btn vw-btn-ghost">Explore Markets</a>
+      </div>
+    </div>
+
+    <div class="features-split-right">
+      <img src="{{ url_for('static', filename='features_3d.jpg') }}" alt="AI Portfolio Analysis, Risk Allocation, Market Tracking" class="features-3d-img" loading="lazy">
+      <div class="features-stat-overlay">
+        <div class="fso-card">
+          <span class="fso-num">7,700+</span>
+          <span class="fso-label">Tickers Tracked</span>
+        </div>
+        <div class="fso-card">
+          <span class="fso-num">26</span>
+          <span class="fso-label">Metrics per Stock</span>
+        </div>
+        <div class="fso-card">
+          <span class="fso-num">24/7</span>
+          <span class="fso-label">Crypto &amp; Global</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== HOW IT WORKS ===================== -->
+<section class="vw-section">
+  <div class="vw-section-head">
+    <h2>Start Your Analysis in 4 Steps</h2>
+    <p>From opening StockSense to a risk-sorted shortlist in your hands.</p>
+  </div>
+
+  <div class="vw-steps">
+    <div class="vw-step">
+      <div class="vw-step-num">1</div>
+      <div><h4>Pick Your Engine</h4><p>Long-horizon GRU Advisor for positions, or the Intraday Scanner for same-session trades.</p></div>
+    </div>
+    <div class="vw-step">
+      <div class="vw-step-num">2</div>
+      <div><h4>Set Budget &amp; Horizon</h4><p>Tell it your capital and how long you're planning to hold.</p></div>
+    </div>
+    <div class="vw-step">
+      <div class="vw-step-num">3</div>
+      <div><h4>Get a Shortlist</h4><p>Low, Medium, and High risk picks, sized to what you can actually buy.</p></div>
+    </div>
+    <div class="vw-step">
+      <div class="vw-step-num">4</div>
+      <div><h4>Generate a Report</h4><p>Full 26-metric breakdown — RSI, MACD, Beta, Sharpe — export to PDF or Excel.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PORTFOLIO RISK VISUAL ===================== -->
+<section class="vw-section home-risk-section">
+  <div class="risk-split">
+    <div class="risk-left">
+      <h2>Understand Your Risk, Before You Invest</h2>
+      <p>StockSense classifies every recommendation into Low, Medium, and High risk — automatically, based on volatility, momentum, and model confidence.</p>
+      <div class="risk-legend">
+        <div class="rl-item low">
+          <div class="rl-dot"></div>
+          <div>
+            <span class="rl-title">Low Risk</span>
+            <span class="rl-desc">Large-cap, stable, defensive picks</span>
+          </div>
+        </div>
+        <div class="rl-item medium">
+          <div class="rl-dot"></div>
+          <div>
+            <span class="rl-title">Medium Risk</span>
+            <span class="rl-desc">Mid-cap growth with moderate volatility</span>
+          </div>
+        </div>
+        <div class="rl-item high">
+          <div class="rl-dot"></div>
+          <div>
+            <span class="rl-title">High Risk</span>
+            <span class="rl-desc">High-beta, high-upside smallcaps &amp; tech</span>
+          </div>
+        </div>
+      </div>
+      <a href="{{ url_for('get_advice') }}" class="vw-btn vw-btn-primary" style="margin-top:28px;">Get My Shortlist</a>
+    </div>
+    <div class="risk-right">
+      <canvas id="riskDonutChart" width="260" height="260"></canvas>
+      <div class="risk-donut-legend">
+        <div class="rdl-row"><span class="rdl-dot low"></span><span>Low Risk</span><span class="rdl-pct">35%</span></div>
+        <div class="rdl-row"><span class="rdl-dot medium"></span><span>Medium Risk</span><span class="rdl-pct">40%</span></div>
+        <div class="rdl-row"><span class="rdl-dot high"></span><span>High Risk</span><span class="rdl-pct">25%</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== INSIGHTS SECTION ===================== -->
+<section class="vw-section">
+  <div class="vw-section-head">
+    <h2>Understand Before You Decide</h2>
+    <p>Everything the engines compute, explained in plain terms.</p>
+  </div>
+
+  <div class="vw-grid-3">
+    <div class="vw-insight-card">
+      <div class="vw-insight-visual">
+        <img src="{{ url_for('static', filename='home_engine_ai.jpg') }}" alt="Deep Learning GRU AI Engine Architecture" loading="lazy">
+        <span class="vw-insight-badge">GRU Neural Engine</span>
+      </div>
+      <div class="vw-insight-body">
+        <h3>How the Engines Work</h3>
+        <p>What the GRU model does, what the intraday scanner doesn't, and where each one's limits are.</p>
+        <a href="{{ url_for('about') }}">Read the breakdown →</a>
+      </div>
+    </div>
+    <div class="vw-insight-card">
+      <div class="vw-insight-visual">
+        <img src="{{ url_for('static', filename='home_markets_live.jpg') }}" alt="Real-time Multi-Exchange Live Market Terminal" loading="lazy">
+        <span class="vw-insight-badge">Live Multi-Asset</span>
+      </div>
+      <div class="vw-insight-body">
+        <h3>Market Data, Live</h3>
+        <p>Stocks, ETFs, crypto, mutual funds, bonds, IPOs — all in one place, refreshed continuously.</p>
+        <a href="{{ url_for('markets') }}">Browse Markets →</a>
+      </div>
+    </div>
+    <div class="vw-insight-card">
+      <div class="vw-insight-visual">
+        <img src="{{ url_for('static', filename='home_reports_analytics.jpg') }}" alt="Quantitative Technical Indicator Suite and Reports" loading="lazy">
+        <span class="vw-insight-badge">26 Indicator Suite</span>
+      </div>
+      <div class="vw-insight-body">
+        <h3>Full Technical Reports</h3>
+        <p>RSI, MACD, Beta, Sharpe, drawdown, and a transparent AI score — for any symbol, any period.</p>
+        <a href="{{ url_for('reports') }}">Generate a report →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CREDIBILITY ===================== -->
+<section class="vw-section">
+  <div class="vw-credibility">
+    <h2>Built Like a Real Product, End to End</h2>
+    <p>
+      Every number on this site traces back to a real source — official exchange data, AMFI, or a
+      documented free API — not a mock dataset. Built to the highest financial app standards.
+    </p>
+    <div class="cred-stat-row">
+      <div class="cred-stat"><span class="cs-num">7,700+</span><span>Assets tracked</span></div>
+      <div class="cred-stat"><span class="cs-num">26</span><span>Metrics per report</span></div>
+      <div class="cred-stat"><span class="cs-num">~40k</span><span>AMFI fund schemes</span></div>
+      <div class="cred-stat"><span class="cs-num">0</span><span>Fake data points</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== NEWSLETTER ===================== -->
+<section class="vw-section" style="padding-top:0;">
+  <div class="vw-newsletter">
+    <div>
+      <h3>Stay Ahead of the Data</h3>
+      <p>Occasional notes on new features and data sources. No spam, no fake urgency.</p>
+    </div>
+    <form class="vw-newsletter-form" id="vwNewsletterForm">
+      <input type="email" placeholder="you@example.com" required>
+      <button type="submit" class="vw-btn vw-btn-primary">Subscribe</button>
+      <p class="vw-newsletter-note" id="vwNewsletterNote">Thanks — this is a UI demo, nothing was actually sent yet.</p>
+    </form>
+  </div>
+</section>
+
+<!-- ===================== BIG FORMAT ASSET CHART MODAL ===================== -->
+<div class="asset-modal-overlay" id="assetChartModal" aria-hidden="true" role="dialog">
+  <div class="asset-modal-backdrop" id="assetModalBackdrop"></div>
+  <div class="asset-modal-dialog">
+    <div class="asset-modal-header">
+      <div class="amh-left">
+        <div class="amh-title-row">
+          <h3 class="amh-symbol" id="modalAssetSymbol">RELIANCE</h3>
+          <span class="amh-badge" id="modalAssetExchange">NSE</span>
+          <span class="amh-category" id="modalAssetCategory">Stocks</span>
+        </div>
+        <div class="amh-name" id="modalAssetName">Reliance Industries Ltd</div>
+      </div>
+      <div class="amh-right">
+        <div class="amh-price-wrap">
+          <span class="amh-price" id="modalAssetPrice">₹2,948.10</span>
+          <span class="amh-change up" id="modalAssetChange"><span class="amh-arrow">▲</span> <span class="amh-change-num">+1.24%</span></span>
+        </div>
+        <button type="button" class="amh-close" id="modalAssetClose" aria-label="Close modal">&times;</button>
+      </div>
+    </div>
+
+    <!-- Timeframe selector -->
+    <div class="asset-modal-controls">
+      <div class="amc-timeframes" id="modalTimeframes">
+        <button type="button" class="amc-tf-btn active" data-tf="1D">1D</button>
+        <button type="button" class="amc-tf-btn" data-tf="1W">1W</button>
+        <button type="button" class="amc-tf-btn" data-tf="1M">1M</button>
+        <button type="button" class="amc-tf-btn" data-tf="1Y">1Y</button>
+        <button type="button" class="amc-tf-btn" data-tf="ALL">ALL</button>
+      </div>
+      <div class="amc-status" id="modalChartStatus">
+        <span class="amc-pulse-dot"></span> Live Data Feed
+      </div>
+    </div>
+
+    <!-- Big Canvas Graphic -->
+    <div class="asset-modal-canvas-wrap" id="modalCanvasWrap">
+      <canvas id="modalBigCanvas"></canvas>
+      <div class="asset-modal-tooltip" id="modalChartTooltip" style="display:none;">
+        <span class="amt-price" id="modalTooltipPrice">—</span>
+        <span class="amt-change" id="modalTooltipChange">—</span>
+        <span class="amt-time" id="modalTooltipTime">—</span>
+      </div>
+      <div class="asset-modal-loading" id="modalChartLoading" style="display:none;">
+        <div class="aml-spinner"></div>
+        <span>Fetching live chart...</span>
+      </div>
+    </div>
+
+    <!-- Asset Key Stats Grid -->
+    <div class="asset-modal-stats">
+      <div class="ams-item">
+        <span class="ams-label">Open</span>
+        <span class="ams-val" id="modalStatOpen">—</span>
+      </div>
+      <div class="ams-item">
+        <span class="ams-label">Day High</span>
+        <span class="ams-val" id="modalStatHigh">—</span>
+      </div>
+      <div class="ams-item">
+        <span class="ams-label">Day Low</span>
+        <span class="ams-val" id="modalStatLow">—</span>
+      </div>
+      <div class="ams-item">
+        <span class="ams-label">Volume</span>
+        <span class="ams-val" id="modalStatVolume">—</span>
+      </div>
+    </div>
+
+    <!-- Action footer -->
+    <div class="asset-modal-footer">
+      <div class="amf-actions">
+        <a href="#" class="vw-btn vw-btn-primary" id="modalViewReportBtn">Open Full Technical Report</a>
+        <a href="{{ url_for('get_advice') }}" class="vw-btn vw-btn-ghost">Analyze in Advisor Engine</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='landing_v2.js') }}"></script>
+{% endblock %}

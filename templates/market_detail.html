@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+{% block title %}{{ config.title }} — StockSense Markets{% endblock %}
+{% block styles %}<link rel="stylesheet" href="{{ url_for('static', filename='markets.css') }}">{% endblock %}
+
+{% block content %}
+<div class="market-detail-wrap">
+
+  <!-- Back Link -->
+  <a href="{{ url_for('markets') }}" class="back-link">
+    ← Back to Markets Hub
+  </a>
+
+  <!-- Detail Hero Header -->
+  <div class="detail-hero-header">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
+      <div>
+        <p class="eyebrow" style="margin:0 0 8px;">{{ config.eyebrow }}</p>
+        <h1 style="font-family:var(--font-display); font-size:clamp(1.8rem, 4vw, 2.6rem); font-weight:700; margin:0 0 12px; line-height:1.2;">{{ config.title }}</h1>
+      </div>
+      <div>
+        {% if config.is_live %}
+        <span class="live-badge"><span class="live-dot"></span> {{ config.badge }} · updated <span class="live-updated-time">just now</span></span>
+        {% else %}
+        <span class="daily-badge">{{ config.badge }}</span>
+        {% endif %}
+      </div>
+    </div>
+    <p class="lede" style="margin:8px 0 0;">{{ config.description }}</p>
+  </div>
+
+  <!-- Detail Content Panel -->
+  <div class="detail-card-panel">
+
+    <!-- ==================== CATEGORY: ETFs, CRYPTO, COMMODITIES, STOCKS ==================== -->
+    {% if config.type in ['etfs', 'crypto', 'commodities', 'stocks'] %}
+      {% if config.type in ['etfs', 'stocks'] %}
+      <input type="text" id="category-search" class="table-search" placeholder="Search by symbol or name...">
+      {% endif %}
+
+      <div class="table-scroll">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Symbol</th>
+            <th>Name</th>
+            {% if config.type in ['etfs', 'stocks'] %}<th>Exchange</th>{% endif %}
+            <th>Price</th>
+            <th>24h / Session Change</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="category-table-body">
+          {% for item in config.items_list %}
+          <tr data-symbol="{{ item.yf_symbol }}" data-currency="{{ '$' if (item.get('currency') == '$' or item.get('exchange') == 'US' or config.type in ['crypto', 'commodities']) else '₹' }}">
+            <td class="mono" style="font-weight:600; color:var(--text);">{{ item.symbol }}</td>
+            <td>{{ item.label }}</td>
+            {% if config.type in ['etfs', 'stocks'] %}
+            <td><span class="pick-exchange">{{ item.exchange }}</span></td>
+            {% endif %}
+            <td class="mono">
+              <span class="live-currency">{{ '$' if (item.get('currency') == '$' or item.get('exchange') == 'US' or config.type in ['crypto', 'commodities']) else '₹' }}</span><span class="live-price-value">—</span>
+            </td>
+            <td class="mono">
+              <span class="live-arrow">·</span> <span class="live-change-value">—</span>%
+            </td>
+            <td>
+              <form action="{{ url_for('reports_growth') }}" method="POST" style="display:inline;">
+                <input type="hidden" name="symbol" value="{{ item.symbol }}">
+                <input type="hidden" name="exchange" value="{{ item.exchange if item.get('exchange') else ('US' if config.type in ['crypto', 'commodities'] else 'NSE') }}">
+                <input type="hidden" name="period_days" value="7">
+                <button type="submit" class="btn btn-ghost btn-sm" style="padding:4px 10px; font-size:0.75rem;">Report →</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      </div>
+
+    <!-- ==================== CATEGORY: MUTUAL FUNDS ==================== -->
+    {% elif config.type == 'mutual-funds' %}
+      <input type="text" id="mf-search" class="table-search" placeholder="Search all ~40,000 AMFI schemes by name..." style="margin-bottom:20px;">
+      <div class="table-scroll">
+      <table class="data-table">
+        <thead><tr><th>Scheme Name</th><th>NAV (₹)</th><th>As of Date</th></tr></thead>
+        <tbody id="mf-table-body">
+          {% for f in config.items_list %}
+          <tr>
+            <td>{{ f.name }}</td>
+            <td class="mono">{{ '₹%.4f'|format(f.nav) if f.nav is not none else '—' }}</td>
+            <td class="mono">{{ f.date }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      </div>
+      <p class="panel-note" style="margin-top:16px;">Showing 100 schemes by default. Search above to query the complete ~40,000 registered AMFI schemes directory.</p>
+
+    <!-- ==================== CATEGORY: BONDS ==================== -->
+    {% elif config.type == 'bonds' %}
+      <h3 class="panel-subhead" style="margin-top:0;">US Treasury Yields</h3>
+      {% if config.us_bonds %}
+      <div class="table-scroll" style="margin-bottom:32px;">
+      <table class="data-table">
+        <thead><tr><th>Instrument</th><th>Yield (%)</th><th>Date</th></tr></thead>
+        <tbody>
+          {% for b in config.us_bonds %}
+          <tr>
+            <td>{{ b.name }}</td>
+            <td class="mono">{{ '%.2f'|format(b.yield_pct) + '%' if b.yield_pct is not none else '—' }}</td>
+            <td class="mono">{{ b.date }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      </div>
+      {% else %}
+      <p class="panel-note" style="margin-bottom:32px;">FRED Treasury API key not configured.</p>
+      {% endif %}
+
+      <h3 class="panel-subhead">Indian Government Securities</h3>
+      <div class="table-scroll">
+      <table class="data-table">
+        <thead><tr><th>Instrument</th><th>Yield (%)</th><th>As of</th></tr></thead>
+        <tbody>
+          {% for b in config.indian_bonds %}
+          <tr>
+            <td>{{ b.name }}</td>
+            <td class="mono">{{ '%.2f'|format(b.yield_pct) + '%' }}</td>
+            <td class="mono">{{ b.as_of }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      </div>
+
+    <!-- ==================== CATEGORY: IPOs ==================== -->
+    {% elif config.type == 'ipos' %}
+      {% if config.items_list %}
+      <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:18px;">Click any IPO card to view full details — timeline, investor categories, subscription tracker and more.</p>
+      <div class="ipo-cards-grid" id="ipoCardsGrid">
+        {% for ipo in config.items_list %}
+        {% set slug = ipo.company | lower | replace(' ', '-') | replace('.', '') | replace(',', '') | replace('(', '') | replace(')', '') | replace('&', '') | replace('/', '-') %}
+        <a href="/markets/ipo/{{ slug }}" class="ipo-list-card">
+          <div class="ipo-lc-logo">{{ ipo.company[0] }}</div>
+          <div class="ipo-lc-body">
+            <span class="ipo-lc-name">{{ ipo.company }}</span>
+            <div class="ipo-lc-meta">
+              <span class="ipo-lc-band">{{ ipo.price_band if ipo.price_band else '—' }}</span>
+              <span class="ipo-lc-dot">·</span>
+              <span class="ipo-lc-size">{{ ipo.issue_size if ipo.issue_size else '—' }}</span>
+            </div>
+            <div class="ipo-lc-dates">
+              <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; margin-right:4px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>{ ipo.open_date }</span>
+              <span style="color:var(--hairline);">—</span>
+              <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; margin-right:4px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>{ ipo.close_date }</span>
+            </div>
+          </div>
+          <span class="ipo-lc-arrow">→</span>
+        </a>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="panel-note">No upcoming IPO issues returned at this moment.</p>
+      {% endif %}
+
+    <!-- ==================== CATEGORY: DERIVATIVES ==================== -->
+    {% elif config.type == 'derivatives' %}
+      {% if config.options_summary and config.options_summary.underlying_value %}
+      <div class="summary-stats" style="margin-bottom:24px;">
+        <div class="stat">
+          <span class="stat-label">Underlying (NIFTY 50)</span>
+          <span class="stat-value">{{ '%.2f'|format(config.options_summary.underlying_value) }}</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Put/Call Ratio (PCR)</span>
+          <span class="stat-value">{{ config.options_summary.put_call_ratio if config.options_summary.put_call_ratio is not none else '—' }}</span>
+        </div>
+      </div>
+      <p class="panel-note">Strikes near the money: {{ config.options_summary.near_strikes|join(', ') }}</p>
+      {% else %}
+      <p class="panel-note">NSE Option Chain data currently unavailable.</p>
+      {% endif %}
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Filter table by search input
+  var searchInput = document.getElementById('category-search');
+  var tbody = document.getElementById('category-table-body');
+  if (searchInput && tbody) {
+    searchInput.addEventListener('input', function () {
+      var q = searchInput.value.trim().toLowerCase();
+      Array.from(tbody.rows).forEach(function (row) {
+        row.style.display = row.textContent.toLowerCase().indexOf(q) === -1 ? 'none' : '';
+      });
+    });
+  }
+</script>
+{% endblock %}
