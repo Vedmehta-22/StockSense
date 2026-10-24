@@ -9,7 +9,7 @@ This project features real-time/intraday stock tracking, market data analysis, a
 ### Step 1: Clone the Repository & Navigate into Folder
 Open VS Code, open the integrated Terminal (`Ctrl + ~`), and run:
 ```bash
-git clone https://github.com/manjit524/StockSense
+git clone https://github.com/Vedmehta-22/StockSense
 cd StockSense
 ```
 
